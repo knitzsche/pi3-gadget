@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -x
+
+mkdir -p $SNAP_COMMON
+exec >> $SNAP_COMMON/prepare-device-hook.log 2>&1
+
+product_serial=`date -Is`
+echo "product_serial:[$product_serial]"
+
+if [ ! "$product_serial" ]; then
+    echo "Empty product_serial"
+    exit 1
+fi
+
+# Set the serial number of the device (needed for the serial assertion)
+snapctl set registration.proposed-serial="\"${product_serial}\""
+
+# Set the location of the Serial Vault and the API key
+snapctl set device-service.url="https://serial-vault.staging.canonical.com:8080/v1"
+snapctl set device-service.headers='{"api-key": "0aRQgtCncDA9tw2dtT90xsOXUcWvxXKkNmyhq4G1ZhRiMt5mSPg"}'
+
+
